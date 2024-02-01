@@ -6,6 +6,7 @@
   <header>
     <h1>StudySpot</h1>
     <i>A campus table solution</i>
+    <hr>
   </header>
 
   <main>
@@ -13,5 +14,10 @@
       <!-- this is how different contents get rendered-->
       <router-view></router-view>
     </div>
+
+    <footer>
+      <hr>
+      &copy; 2024 StudySpot
+    </footer>
   </main>
 </template>
