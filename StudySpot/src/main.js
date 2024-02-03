@@ -7,6 +7,7 @@ import Hello from './Hello.vue'
 import Map from './Map.vue'
 import Oops from './404.vue'
 import Me from './Me.vue'
+import Admin from './Admin.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 // build routes
@@ -15,6 +16,7 @@ const routes = [
     {path: '/login', component: Login},
     {path: '/map', component: Map},
     {path: '/me', component: Me},
+    {path: '/admin', component: Admin},
     {path: '/:catchAll(.*)', component: Oops}
 ]
 

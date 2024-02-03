@@ -1,5 +1,12 @@
 <script setup>
+import { useRouter } from 'vue-router';
 
+const router = useRouter();
+
+// visit map page
+const visitMap = () => {
+  router.push('/map');
+};
 </script>
 
 <template>
@@ -8,7 +15,7 @@
     <!-- account controls-->
     <div>
       <button>Log out</button>
-      <button>Map</button>
+      <button @click="visitMap">Map</button>
     </div>
     <div style="display: flex">
       <!-- account information -->

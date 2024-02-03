@@ -17,7 +17,7 @@
 
     <footer>
       <hr>
-      &copy; 2024 StudySpot by green. <i>In the memory of Freetalk and friends.</i>
+      &copy; 2024 StudySpot by green.
     </footer>
   </main>
 </template>

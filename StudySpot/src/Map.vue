@@ -1,4 +1,12 @@
 <script setup>
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+// visit me page
+const visitMe = () => {
+  router.push('/me');
+};
 </script>
 
 <template>
@@ -6,7 +14,7 @@
     <div class="wrapper">
       <!--account controls-->
       <button>Log out</button>
-      <button>Me</button>
+      <button @click="visitMe">Me</button>
       <!--search bar-->
       <div style="float: right;">
         <form>
