@@ -1,9 +1,13 @@
 // init
 const express = require('express');
 const sqlite3 = require('sqlite3').verbose();
+const cors = require('cors');
 
 const app = express();
 const db = new sqlite3.Database('test.db');
+
+app.use(cors()); // setup server to use cors for testing
+app.use(express.json())
 
 //TODO: api routes
 
@@ -53,7 +57,7 @@ app.post('/api/users/login', (req, res) => {
             // User found, you may create a token or session here
             res.json({ message: 'Login successful' });
         } else {
-            res.status(401).json({ error: 'Invalid username or password.' });
+            res.status(401).json({error: 'Invalid username or password.'});
         }
     });
 })

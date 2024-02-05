@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.18.2",
     "vue": "^3.4.15",
     "vue-router": "^4.2.5"
