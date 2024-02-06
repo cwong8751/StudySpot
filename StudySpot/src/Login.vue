@@ -55,12 +55,48 @@ const handleAccount = () => {
       handleLogin()
     }
     else{
-      //TODO: Handle sign up
+      handleSignup()
     }
   }
   else{
-    //TODO: Print error message
+    alert("Radio group not chosen")
   }
+}
+
+// function to handle signup
+const handleSignup = () => {
+  // get username and password from form
+  let username = document.getElementById("username").value
+  let password = document.getElementById("password").value
+
+  // validate username, password
+  // not checking for email because not required
+  if(username == null || password == null){
+    //TODO: better validation
+    alert("Username or password empty")
+  }
+
+  fetch('http://localhost:3000/api/users/signup', {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({username, password}),
+  })
+      .then(response => {
+        if(!response.ok){
+          throw new Error('Something went wrong.')
+        }
+        return response.json()
+      })
+      .then(data => {
+        //TODO: Handle successful signup
+      })
+      .catch(error => {
+        console.error(error)
+        res.status(500).json({error: 'Internal server error.'})
+      })
+
 }
 
 // function to handle login
@@ -76,14 +112,14 @@ const handleLogin = () => {
 
   // validate username, password and email
   if(username == null || password == null || email == null){
-    //TODO: Handle
+    alert("Username, password or email empty")
   }
 
   // validate email
   var regex = /^[a-zA-Z0-9._-]+@wustl\.edu$/
   var validate = regex.test(email)
   if(!validate){
-    //TODO: Handle
+    alert("Email invalid.")
   }
 
   // fetch request login user
@@ -96,7 +132,7 @@ const handleLogin = () => {
   })
       .then(response => {
         if(!response.ok){
-          throw new Error('Invalid username or password.')
+          throw new Error('Invalid username and password.')
         }
         return response.json()
       })
