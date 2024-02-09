@@ -1,12 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
 
 // visit / page
 const visitHello = () => {
   router.push('/');
 };
+
 </script>
 
 <template>
@@ -47,14 +47,16 @@ const visitHello = () => {
 <script>
 // function to handle account form click
 const handleAccount = () => {
-  var type = document.querySelector('input[name="account"]:checked');
+  let type = document.querySelector('input[name="account"]:checked');
 
   if(type){
     // login or sign up
     if(type.value === "login"){
+      console.log("Handling login")
       handleLogin()
     }
     else{
+      console.log("Handling signup")
       handleSignup()
     }
   }
@@ -137,11 +139,14 @@ const handleLogin = () => {
         return response.json()
       })
       .then(data => {
-        //TODO: Handle successful login
+        console.log("Login success")
+        console.log(data)
+
+        alert("Login success")
+        router.push('/map') //TODO: Why doesn't this work
       })
       .catch(error => {
         console.error(error)
-        res.status(500).json({error: 'Internal server error.'})
       })
 }
 </script>

@@ -4,7 +4,7 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors');
 
 const app = express();
-const db = new sqlite3.Database('test.db');
+const db = new sqlite3.Database('./test.db');
 
 app.use(cors()); // setup server to use cors for testing
 app.use(express.json())
@@ -38,11 +38,16 @@ app.post('/api/users/signup', (req, res) => {
 app.post('/api/users/login', (req, res) => {
     const {username, password} = req.body;
 
+    console.log(username)
+    console.log(password)
+
     // validate username and password
     //TODO: better validation
     if(!username || !password){
         res.status(400).json({error: 'Username or password empty.'})
     }
+
+    //TODO: why does it give 401 every time? why is row undefined?
 
     // log in from db
     db.get('SELECT * FROM users WHERE username = ? AND password = ?', [username, password], (err, row) => {
@@ -52,10 +57,12 @@ app.post('/api/users/login', (req, res) => {
             return res.status(500).json({ error: 'Internal Server Error' });
         }
 
+        console.log(row)
+
         // validate password
         if (row) {
             // User found, you may create a token or session here
-            res.json({ message: 'Login successful' });
+            res.json({ message: 'Login successful', username: username});
         } else {
             res.status(401).json({error: 'Invalid username or password.'});
         }
