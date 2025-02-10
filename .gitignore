@@ -1,0 +1,80 @@
+# Node.js dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+.log
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build artifacts
+dist/
+build/
+public/
+.temp/
+.vite/
+.vuepress/dist
+.vuepress/.cache
+
+# Editor & IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+
+# MacOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# NPM & Yarn caches
+.npm/
+.yarn/
+.pnp.*
+.pnp
+
+# Testing & Coverage
+coverage/
+jest-cache/
+jest-transform-cache/
+cypress/videos/
+cypress/screenshots/
+
+# Linting
+.eslintcache
+
+# TypeScript
+*.tsbuildinfo
+
+# Firebase & Cloud Functions
+.firebase/
+functions/node_modules/
+functions/lib/
+
+# Nuxt.js specific
+.nuxt/
+output/
+
+# Storybook
+.storybook-out/
+
+# Local development overrides
+local.json
+*.local
+
+# Docker
+docker-compose.override.yml
+
