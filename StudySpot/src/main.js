@@ -8,6 +8,8 @@ import Map from './Map.vue'
 import Oops from './404.vue'
 import Me from './Me.vue'
 import Admin from './Admin.vue'
+import '@/assets/base.css';
+import '@/assets/main.css';
 import { createRouter, createWebHistory } from 'vue-router'
 
 // build routes

@@ -12,11 +12,12 @@ const visitMe = () => {
 <template>
   <main>
     <div class="wrapper">
-      <!--account controls-->
-      <button>Log out</button>
-      <button @click="visitMe">Me</button>
-      <!--search bar-->
-      <div style="float: right;">
+      <div class="header-toolbar">
+        <!--account controls-->
+        <div>
+          <button>Log out</button>
+          <button @click="visitMe">Me</button>
+        </div>
         <form>
           <input type="text" id="search" placeholder="Search for tables" required>
           <button type="submit">Go</button>
@@ -52,7 +53,8 @@ const visitMe = () => {
               <button>Report</button>
             </div>
             <!-- vacancy indicator-->
-            <img style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto" src="./assets/traffic_green.png" alt="traffic_light_green"/>
+            <img style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
+              src="./assets/traffic_green.png" alt="traffic_light_green" />
           </div>
         </div>
       </div>

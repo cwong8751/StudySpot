@@ -6,7 +6,6 @@
   <header>
     <h1>StudySpot</h1>
     <i>A campus table solution</i>
-    <hr>
   </header>
 
   <main>
@@ -16,7 +15,6 @@
     </div>
 
     <footer>
-      <hr>
       &copy; 2024 StudySpot by green.
     </footer>
   </main>

@@ -47,7 +47,10 @@ const handleLogin = () => {
   .then(data => {
     console.log("Login success", data);
     alert("Login success");
-    router.push('/map'); // ✅ This should now work
+
+    // set user details into session 
+    sessionStorage.setItem('user', username.value); //TODO: might want to change this later 
+    router.push('/map');
   })
   .catch(error => {
     console.error(error);
@@ -95,13 +98,13 @@ const handleAccount = () => {
 <template>
   <main>
     <div class="wrapper">
-      <button @click="visitHello">Go back</button>
-      <div style="display: flex;">
-        <div style="width: 50%">
+      <div class="left-right-container">
+        <div class="left-subcontainer">
           <h2>Log in/Sign up</h2>
           <p>If you haven't signed up yet, we will sign you up; otherwise, you will be logged in.</p>
+          <button @click="visitHello">Go back</button>
         </div>
-        <div style="width: 50%">
+        <div class="right-subcontainer">
           <form @submit.prevent="handleAccount">
             <label for="login">Login: </label>
             <input type="radio" id="login" name="account" value="login" required>
