@@ -97,6 +97,56 @@ app.post('/api/users/getOne', (req, res) => {
     });
 });
 
+// get all tables 
+app.get('/api/tables/getAll', (req, res) => {
+    // Get all tables
+    const query = 'SELECT * FROM tables';
+    console.log('Executing query:', query);
+
+    db.all(query, [], (err, rows) => {
+        if (err) {
+            console.error('Database error:', err.message);
+            return res.status(500).json({ error: 'Internal Server Error' });
+        }
+
+        console.log('Retrieved all tables:', rows);
+        res.status(200).json({
+            message: 'Successfully retrieved all tables',
+            data: rows
+        });
+    });
+});
+
+// user reports they are at a table add capacity
+app.post('/api/tables/iAmHere', (req, res) => {
+    console.log(req.body);
+    const { curCapacity , tableId } = req.body;
+
+    console.log(curCapacity);
+    console.log(tableId);
+
+    // stupid check
+    if (!tableId || !curCapacity) {
+        return res.status(400).json({ error: 'Table ID or capacity empty.' })
+    }
+
+    // add capacity
+    const newCapacity = curCapacity + 1;
+
+    // add user to db
+    db.run('UPDATE tables SET capacity = ? WHERE id = ?', [newCapacity, tableId], function (err) {
+        // error reporting
+        if (err) {
+            console.error(err.message)
+            return res.status(500).json({ error: 'Internal server error.' })
+        }
+
+        // success
+        res.status(200).json({ message: 'Capacity updated successfully.' })
+    });
+});
+
+
 // Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

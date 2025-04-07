@@ -1,13 +1,79 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const router = useRouter();
+const tables = ref([]); // array to hold table data
 
-// visit me page
 const visitMe = () => {
   router.push('/me');
 };
+
+const handleIamHere = (curCapacity, tableId) => {
+  console.log("user reported they are at table id: ", tableId);
+  console.log("user reported they are at table with capacity: ", curCapacity);
+
+  fetch('http://localhost:3000/api/tables/iAmHere', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ curCapacity ,tableId }),
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(err => {
+          throw new Error(`Something went wrong: ${err}`);
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("capacity updated", data);
+      alert("Ok, you are here");
+    })
+    .catch(error => {
+      console.error(error);
+    });
+}
+
+onMounted(() => {
+  let map = L.map('map').setView([38.648987, -90.312553], 16.2);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors'
+  }).addTo(map);
+
+  fetch('http://localhost:3000/api/tables/getAll', {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+  })
+    .then(response => {
+      if (!response.ok) {
+        return response.text().then(err => {
+          throw new Error(`Something went wrong: ${err}`);
+        });
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Table data", data);
+      tables.value = data.data;
+
+      // map markers onto leaflet map
+      data.data.forEach(table => {
+        if (table.latitude && table.longitude) { // check if coordinates exist
+          const marker = L.marker([table.latitude, table.longitude]).addTo(map);
+          marker.bindPopup(`Table ${table.table_number}`);
+        }
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
+});
 </script>
+
 
 <template>
   <main>
@@ -30,50 +96,36 @@ const visitMe = () => {
           <h2>Map</h2>
           <!-- initialize map -->
           <div style="height: 400px; width: 95%;" id="map"></div>
-          <button>Center</button>
+          <!-- <button>Center</button> -->
         </div>
 
         <!-- get list of tables -->
         <div style="width: 50%;">
           <h2>Tabling information</h2>
-          <!-- what the individual tabling should look like-->
-          <div style="border: black 1px solid;">
-            <h3>Table</h3>
-            <b>Details: </b>
+          <!-- populate all tables -->
+          <div v-for="table in tables" :key="table.id">
+            <h3>Table {{ table.table_number }}</h3>
             <ul>
-              <li>Table number: 533</li>
-              <li>Location: Lopata hall 1st floor, near Stanley's</li>
-              <li>Number of chairs: 1</li>
-              <li>Power outlet nearby? Yes</li>
-              <li>Toilet nearby? Yes</li>
+              <li>Location: {{ table.location }}</li>
+              <li>Number of chairs: {{ table.num_chairs }}</li>
+              <li>Power outlet nearby? {{ table.power_outlet_nearby > 0 ? 'Yes' : 'No' }}</li>
+              <li>Toilet nearby? {{ table.toilet_nearby > 0 ? 'Yes' : 'No' }}</li>
             </ul>
-            <!-- tabling controls -->
             <div>
-              <button>I am here</button>
-              <button>Report</button>
+              <button @click="handleIamHere(table.capacity ,table.id)">I am here</button>
+              <!-- <button>Report</button> -->
             </div>
-            <!-- vacancy indicator-->
-            <img style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
+            <img v-if="table.capacity > 50" style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
               src="./assets/traffic_green.png" alt="traffic_light_green" />
+            <img v-else-if="table.capacity > 20" style="margin-left: 5%; transform: rotate(90deg);" height="100"
+              width="auto" src="./assets/traffic_yellow.png" alt="traffic_light_yellow" />
+            <img v-else style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
+              src="./assets/traffic_red.png" alt="traffic_light_red" />
+            <hr>
           </div>
+          <p v-show="tables.length == 0">There are no tables available</p>
         </div>
       </div>
     </div>
   </main>
 </template>
-
-<script>
-import { LMap, LTileLayer } from "@vue-leaflet/vue-leaflet"
-import { latLng } from "leaflet"
-export default {
-  mounted() {
-    // declare map
-    let map = L.map('map').setView([38.648987, -90.312553], 16.2)
-
-    // set title layer for map
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(map);
-  }
-}
-</script>
