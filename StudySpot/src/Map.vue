@@ -1,16 +1,18 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
 const router = useRouter();
 const tables = ref([]); // array to hold table data
+const searchTerm = ref(''); // search term for filtering tables
 
 const visitMe = () => {
   router.push('/me');
 };
 
+// handles the i am here btn 
 const handleIamHere = (curCapacity, tableId) => {
   console.log("user reported they are at table id: ", tableId);
   console.log("user reported they are at table with capacity: ", curCapacity);
@@ -36,6 +38,18 @@ const handleIamHere = (curCapacity, tableId) => {
       console.error(error);
     });
 }
+
+// handles the search bar
+const handleSearch = computed(() => {
+  return tables.value.filter(table => {
+    // Filter based on table number, location, or any other field
+    const searchLower = searchTerm.value.toLowerCase();
+    return (
+      table.table_number.toString().includes(searchLower) ||
+      table.location.toLowerCase().includes(searchLower)
+    );
+  });
+});
 
 onMounted(() => {
   let map = L.map('map').setView([38.648987, -90.312553], 16.2);
@@ -84,9 +98,8 @@ onMounted(() => {
           <button>Log out</button>
           <button @click="visitMe">Me</button>
         </div>
-        <form>
-          <input type="text" id="search" placeholder="Search for tables" required>
-          <button type="submit">Go</button>
+        <form @submit.prevent>
+          <input v-model="searchTerm" type="text" id="search" placeholder="Search for tables" required>
         </form>
       </div>
       <!-- flex box controls the layout-->
@@ -103,7 +116,7 @@ onMounted(() => {
         <div style="width: 50%;">
           <h2>Tabling information</h2>
           <!-- populate all tables -->
-          <div v-for="table in tables" :key="table.id">
+          <div v-for="table in handleSearch" :key="table.id">
             <h3>Table {{ table.table_number }}</h3>
             <ul>
               <li>Location: {{ table.location }}</li>
