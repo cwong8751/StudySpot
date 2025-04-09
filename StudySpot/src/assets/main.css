@@ -15,6 +15,7 @@
   justify-content: space-between;
   align-items: center;
   flex: 1;
+  margin-right: .5em;
 }
 
 .right-subcontainer {
@@ -43,7 +44,7 @@ button{
   font-size: 16px;
 }
 
-input[type="text"], input[type="password"], input[type="email"] {
+input[type="text"], input[type="password"], input[type="email"], input[type="number"], input[type="tel"], input[type="url"], select, textarea {
   padding: 11px;
   font-size: 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -64,4 +65,43 @@ input[type="radio"] {
 
 ul {
   list-style-type: none;
+}
+
+.danger{
+  color: white;
+  background: red;
+}
+
+.table-card {
+  padding: 16px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  cursor: pointer;
+  background-color: white;
+  transition: background-color 0.2s ease;
+}
+
+.table-card:hover {
+  background-color: #f2f2f2;
+}
+
+.table-card.selected {
+  background-color: #d0e7ff; /* light blue, change as needed */
+}
+
+form.add-table-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1em; /* spacing between form fields */
+  max-width: 400px; /* optional: limits width */
+}
+
+form.add-table-form label {
+  font-weight: bold;
+}
+
+form.add-table-form input,
+form.add-table-form select {
+  width: 100%;
+  box-sizing: border-box;
 }

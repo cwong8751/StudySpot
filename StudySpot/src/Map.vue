@@ -12,6 +12,14 @@ const visitMe = () => {
   router.push('/me');
 };
 
+const handleLogout = () => {
+  // Handle logout logic here
+  console.log("User logged out");
+  sessionStorage.clear();
+  alert("Bye bye");
+  router.push('/login');
+};
+
 // handles the i am here btn 
 const handleIamHere = (curCapacity, tableId) => {
   console.log("user reported they are at table id: ", tableId);
@@ -52,6 +60,15 @@ const handleSearch = computed(() => {
 });
 
 onMounted(() => {
+
+  // check if user is logged in
+  const user = sessionStorage.getItem('user');
+  if (!user) {
+    alert("Please log in");
+    router.push('/login');
+    return;
+  }
+
   let map = L.map('map').setView([38.648987, -90.312553], 16.2);
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -88,14 +105,13 @@ onMounted(() => {
 });
 </script>
 
-
 <template>
   <main>
     <div class="wrapper">
       <div class="header-toolbar">
         <!--account controls-->
         <div>
-          <button>Log out</button>
+          <button class="danger" @click="handleLogout">Log out</button>
           <button @click="visitMe">Me</button>
         </div>
         <form @submit.prevent>
@@ -103,7 +119,7 @@ onMounted(() => {
         </form>
       </div>
       <!-- flex box controls the layout-->
-      <div style="display: flex">
+      <div style="display: flex; margin-left: .5em; margin-right: .5em;">
         <!-- display map information -->
         <div style="width: 50%;">
           <h2>Map</h2>
@@ -116,7 +132,7 @@ onMounted(() => {
         <div style="width: 50%;">
           <h2>Tabling information</h2>
           <!-- populate all tables -->
-          <div v-for="table in handleSearch" :key="table.id">
+          <div v-for="table in handleSearch" :key="table.id" class="table-card">
             <h3>Table {{ table.table_number }}</h3>
             <ul>
               <li>Location: {{ table.location }}</li>
@@ -134,7 +150,6 @@ onMounted(() => {
               width="auto" src="./assets/traffic_yellow.png" alt="traffic_light_yellow" />
             <img v-else style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
               src="./assets/traffic_red.png" alt="traffic_light_red" />
-            <hr>
           </div>
           <p v-show="tables.length == 0">There are no tables available</p>
         </div>

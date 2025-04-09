@@ -120,7 +120,7 @@ app.get('/api/tables/getAll', (req, res) => {
 // user reports they are at a table add capacity
 app.post('/api/tables/iAmHere', (req, res) => {
     console.log(req.body);
-    const { curCapacity , tableId } = req.body;
+    const { curCapacity, tableId } = req.body;
 
     console.log(curCapacity);
     console.log(tableId);
@@ -146,6 +146,30 @@ app.post('/api/tables/iAmHere', (req, res) => {
     });
 });
 
+
+// add a table
+app.post('/api/tables/addTable', (req, res) => {
+    const { tableName, location, numChairs, poNearby, tNearby, lat, lon } = req.body;
+
+    // stupid check
+    if (!tableName || !capacity) {
+        return res.status(400).json({ error: 'Table name or capacity empty.' })
+    }
+
+    // add user to db
+    db.run('INSERT INTO tables (table_number, location, num_chairs, power_outlet_nearby, toilet_nearby, capacity, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [tableName, location, numChairs, poNearby, tNearby, 0, lat, lon], function (err) {
+        // error reporting
+        if (err) {
+            console.error(err.message)
+            return res.status(500).json({ error: 'Internal server error.' })
+        }
+
+        // success
+        res.status(200).json({ message: 'Table added successfully.' })
+    }
+    );
+}
+);
 
 // Start server
 const PORT = process.env.PORT || 3000;

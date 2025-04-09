@@ -21,15 +21,6 @@ const getUserDetails = async () => {
 
   console.log("user", user);
 
-  // let parsedUser;
-  // try {
-  //   parsedUser = JSON.parse(user); // 🔥 FIX: Parse JSON string
-  // } catch (error) {
-  //   console.error("Error parsing stored user:", error);
-  //   router.push('/');
-  //   return;
-  // }
-
   fetch('http://localhost:3000/api/users/getOne', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
@@ -61,11 +52,13 @@ onMounted(() => {
   <main>
     <div class="wrapper">
       <!-- account controls-->
-      <div>
-        <button>Log out</button>
-        <button @click="visitMap">Map</button>
+      <div class="header-toolbar">
+        <div>
+          <button class="danger">Log out</button>
+          <button @click="visitMap">Map</button>
+        </div>
       </div>
-      <div style="display: flex">
+      <div style="display: flex; margin-left: .5em; margin-right: .5em;">
         <!-- account information -->
         <div style="width: 50%;">
           <h2>Me</h2>
@@ -84,7 +77,7 @@ onMounted(() => {
         <div style="width: 50%;">
           <h2>Actions</h2>
           <b>Delete account: </b>
-          <button>Goodbye</button>
+          <button class="danger">Goodbye</button>
         </div>
       </div>
     </div>
