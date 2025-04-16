@@ -14,8 +14,10 @@
     "better-sqlite3": "^11.8.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
+    "qrcode.vue": "^3.6.0",
     "sqlite3": "^5.1.7",
     "vue": "^3.4.15",
+    "vue-qrcode-component": "^2.1.1",
     "vue-router": "^4.2.5"
   },
   "devDependencies": {

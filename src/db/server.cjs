@@ -149,15 +149,17 @@ app.post('/api/tables/iAmHere', (req, res) => {
 
 // add a table
 app.post('/api/tables/addTable', (req, res) => {
-    const { tableName, location, numChairs, poNearby, tNearby, lat, lon } = req.body;
+    const { tableNumber, location, numChairs, poNearby, tNearby, lat, lon } = req.body;
+
+    console.log(req.body);
 
     // stupid check
-    if (!tableName || !capacity) {
-        return res.status(400).json({ error: 'Table name or capacity empty.' })
+    if (!tableNumber) {
+        return res.status(400).json({ error: 'Table name empty.' })
     }
 
     // add user to db
-    db.run('INSERT INTO tables (table_number, location, num_chairs, power_outlet_nearby, toilet_nearby, capacity, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [tableName, location, numChairs, poNearby, tNearby, 0, lat, lon], function (err) {
+    db.run('INSERT INTO tables (table_number, location, num_chairs, power_outlet_nearby, toilet_nearby, capacity, latitude, longitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [tableNumber, location, numChairs, poNearby, tNearby, 0, lat, lon], function (err) {
         // error reporting
         if (err) {
             console.error(err.message)

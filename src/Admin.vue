@@ -37,14 +37,14 @@ const handleSearch = computed(() => {
 // handle the click table btn 
 //TODO: for some reason this isn't working 
 const handleTableClicked = (table) => {
-  selectedTableId = table.id;
+  selectedTableId.value = table.id;
   console.log("table clicked: ", table.id);
 }
 
 // handle add table button 
 const handleAddTable = () => {
-  // const debugStr = `Table Number: ${tableNumber.value}, Location: ${tableLocation.value}, Number of Chairs: ${numChairs.value}, Power Outlet Nearby: ${powerOutlet.value}, Toilet Nearby: ${toiletNearby.value}, Latitude: ${lat.value}, Longitude: ${long.value}`;
-  // alert(debugStr);
+   const debugStr = `Table Number: ${tableNumber.value}, Location: ${tableLocation.value}, Number of Chairs: ${numChairs.value}, Power Outlet Nearby: ${powerOutlet.value}, Toilet Nearby: ${toiletNearby.value}, Latitude: ${lat.value}, Longitude: ${long.value}`;
+   alert(debugStr);
 
   // check table number singleton
   if (tables.value.some(table => table.table_number === tableNumber.value)) {
@@ -52,7 +52,34 @@ const handleAddTable = () => {
     return;
   }
 
-  //TODO: handle it in backend 
+  const reqBody = {
+    tableNumber: tableNumber.value,
+    location: tableLocation.value,
+    numChairs: numChairs.value,
+    poNearby: powerOutlet.value,
+    tNearby: toiletNearby.value,
+    lat: lat.value,
+    lon: long.value
+  }
+
+  fetch('http://localhost:3000/api/tables/addTable', {
+    method: "POST",
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(reqBody),
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to add table');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log("Add table success", data);
+    alert("Add table OK");
+  })
+  .catch(error => {
+    console.error(error);
+  });
 }
 
 onMounted(() => {
@@ -156,6 +183,7 @@ onMounted(() => {
 
                 <button type="submit">Add Table</button>
               </div>
+              <h2>Table QR Code</h2>
             </form>
         </div>
       </div>
@@ -163,5 +191,3 @@ onMounted(() => {
     </div>
   </main>
 </template>
-
-<style scoped></style>
