@@ -1,19 +1,27 @@
 # StudySpot
-A campus study table status solution 
 
-## How to build
-1. <code>npm install</code> to get all dependencies.
-2. <code>npm run dev</code> to run the vue app itself. Server should fire up at localhost:3175.
-3. Go to the <code>db</code> folder under <code>src</code> and 
-<code>node server.cjs</code>. Server should fire up at localhost:3000.
+StudySpot is a workplace/campus tabling solution powered by crowdsourcing. Written in sqlite, vue.js.
 
-## Other tools
-Use Webstorm/Vscode for developing, I like webstorm. 
-<br>
-Use db browser for sqlite to operate on the database. Database should be called <code>test.db</code>
-and located under <code>.\src\db</code>
+## Project Setup
 
-## Licence
-No licence yet but I think I have poor man's copyright. 
+```sh
+npm install
+```
 
-By green
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+```
+
+### Lint with [ESLint](https://eslint.org/)
+
+```sh
+npm run lint
+```
