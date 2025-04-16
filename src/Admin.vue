@@ -82,6 +82,24 @@ const handleAddTable = () => {
   });
 }
 
+// handle moidify btn
+const handleModifyTableButton = () => {
+  if(selectedTableId.value === null) {
+    alert("Please select a table to modify");
+    return;
+  }
+
+  //TODO: finish this method 
+}
+
+// handle delete btn
+const handleDeleteTableButton = () => {
+  if(selectedTableId.value === null) {
+    alert("Please select a table to delete");
+    return;
+  }
+}
+
 onMounted(() => {
   fetch('http://localhost:3000/api/tables/getAll', {
     method: 'GET',
@@ -119,8 +137,8 @@ onMounted(() => {
         <div class="left-subcontainer">
           <h2>Administrator</h2>
           <div style="display: inline;">
-            <button>Modify a table</button>
-            <button>Delete a table</button>
+            <button @click="handleModifyTableButton" >Modify a table</button>
+            <button @click="handleDeleteTableButton">Delete a table</button>
             <form @submit.prevent>
               <input v-model="searchTerm" type="text" id="search" placeholder="Search for tables" required>
             </form>
@@ -136,10 +154,9 @@ onMounted(() => {
                 <li>Power outlet nearby? {{ table.power_outlet_nearby > 0 ? 'Yes' : 'No' }}</li>
                 <li>Toilet nearby? {{ table.toilet_nearby > 0 ? 'Yes' : 'No' }}</li>
               </ul>
-              <div>
+              <!-- <div>
                 <button @click="handleIamHere(table.capacity, table.id)">I am here</button>
-                <!-- <button>Report</button> -->
-              </div>
+              </div> -->
               <img v-if="table.capacity > 50" style="margin-left: 5%; transform: rotate(90deg);" height="100"
                 width="auto" src="./assets/traffic_green.png" alt="traffic_light_green" />
               <img v-else-if="table.capacity > 20" style="margin-left: 5%; transform: rotate(90deg);" height="100"
