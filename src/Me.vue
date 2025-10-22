@@ -1,48 +1,72 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
 
 const router = useRouter();
-
 const userInfo = ref(null);
 
-// visit map page
+// 🔹 Navigate to map
 const visitMap = () => {
   router.push('/map');
 };
 
-// get user details on load
+// 🔹 Log out (clear session)
+const handleLogout = () => {
+  sessionStorage.removeItem('user');
+  router.push('/');
+};
+
+// 🔹 Delete account
+const handleDeleteAccount = async () => {
+  if (!userInfo.value) return;
+
+  const confirmDelete = confirm("Are you sure you want to delete your account?");
+  if (!confirmDelete) return;
+
+  try {
+    const response = await fetch('http://localhost:5001/users/delete', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: userInfo.value.username }),
+    });
+
+    if (!response.ok) throw new Error('Failed to delete account');
+
+    alert("Your account has been deleted.");
+    handleLogout();
+  } catch (error) {
+    console.error(error);
+    alert("Error deleting account.");
+  }
+};
+
+// 🔹 Get user details from MongoDB
 const getUserDetails = async () => {
-  let user = sessionStorage.getItem('user');
-  if (!user) {
+  const username = sessionStorage.getItem('user');
+
+  if (!username) {
     router.push('/');
+    return;
   }
 
-  console.log("user", user);
-
-  fetch('http://localhost:3000/api/users/getOne', {
-    method: "POST",
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: user.toString() }),
-  })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Something went wrong.');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log("got user details success", data);
-      console.log("data.row", data.row);
-      userInfo.value = data.row;
-    })
-    .catch(error => {
-      console.error(error);
+  try {
+    const response = await fetch('http://localhost:5001/users/getOne', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username }),
     });
-}
 
-// on load
+    if (!response.ok) throw new Error('Failed to fetch user details');
+
+    const data = await response.json();
+    console.log('✅ User details fetched:', data.user);
+    userInfo.value = data.user;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+// 🔹 Load user info when page loads
 onMounted(() => {
   getUserDetails();
 });
@@ -51,37 +75,33 @@ onMounted(() => {
 <template>
   <main>
     <div class="wrapper">
-      <!-- account controls-->
+      <!-- Header -->
       <div class="header-toolbar">
-        <div>
-          <button class="danger">Log out</button>
-          <button @click="visitMap">Map</button>
-        </div>
+        <button class="danger" @click="handleLogout">Log out</button>
+        <button @click="visitMap">Map</button>
       </div>
+
       <div style="display: flex; margin-left: .5em; margin-right: .5em;">
-        <!-- account information -->
+        <!-- LEFT: Account Info -->
         <div style="width: 50%;">
-          <h2>Me</h2>
+          <h2>My Account</h2>
 
-          <b>Details: </b>
+          <b>Details:</b>
           <ul v-if="userInfo">
-            <li>Name: {{ userInfo.username }}</li>
-            <!-- <li>Email: someone@wustl.edu</li> -->
-            <li>Password: {{ userInfo.password }}</li>
-            <li>Organization: Washington University in St. Louis</li>
+            <li><b>Username:</b> {{ userInfo.username }}</li>
+            <li><b>Email:</b> {{ userInfo.email }}</li>
+            <li><b>Account ID:</b> {{ userInfo._id }}</li>
           </ul>
-          <p v-else>Loading...</p>
-
+          <p v-else>Loading user info...</p>
         </div>
-        <!-- account controls -->
+
+        <!-- RIGHT: Account Actions -->
         <div style="width: 50%;">
           <h2>Actions</h2>
-          <b>Delete account: </b>
-          <button class="danger">Goodbye</button>
+          <b>Delete Account:</b>
+          <button class="danger" @click="handleDeleteAccount">Goodbye</button>
         </div>
       </div>
     </div>
   </main>
 </template>
-
-<style scoped></style>

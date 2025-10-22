@@ -5,7 +5,6 @@
 <template>
   <header>
     <h1>StudySpot</h1>
-    <i>A campus table solution</i>
   </header>
 
   <main>

@@ -20,40 +20,31 @@ const handleLogout = () => {
   router.push('/login');
 };
 
-// handles the i am here btn 
-const handleIamHere = (curCapacity, tableId) => {
-  console.log("user reported they are at table id: ", tableId);
-  console.log("user reported they are at table with capacity: ", curCapacity);
-
-  fetch('http://localhost:3000/api/tables/iAmHere', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ curCapacity ,tableId }),
-  })
-    .then(response => {
-      if (!response.ok) {
-        return response.text().then(err => {
-          throw new Error(`Something went wrong: ${err}`);
-        });
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log("capacity updated", data);
-      alert("Ok, you are here");
-    })
-    .catch(error => {
-      console.error(error);
+// handles the i am here btn
+const handleIamHere = async (tableId) => {
+  try {
+    const response = await fetch('http://localhost:5001/tables/iAmHere', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ tableId }),
     });
-}
+    if (!response.ok) throw new Error('Failed to update table');
+    const data = await response.json();
+    alert('✅ You are here! Utilization updated.');
+    console.log('Updated table:', data);
+  } catch (error) {
+    console.error(error);
+    alert('❌ Error updating utilization');
+  }
+};
+
 
 // handles the search bar
 const handleSearch = computed(() => {
+  const searchLower = searchTerm.value.toLowerCase();
   return tables.value.filter(table => {
-    // Filter based on table number, location, or any other field
-    const searchLower = searchTerm.value.toLowerCase();
     return (
-      table.table_number.toString().includes(searchLower) ||
+      table.tableNumber.toString().includes(searchLower) ||
       table.location.toLowerCase().includes(searchLower)
     );
   });
@@ -75,7 +66,7 @@ onMounted(() => {
     attribution: '© OpenStreetMap contributors'
   }).addTo(map);
 
-  fetch('http://localhost:3000/api/tables/getAll', {
+  fetch('http://localhost:5001/tables', {
     method: 'GET',
     headers: { 'Content-Type': 'application/json' },
   })
@@ -89,13 +80,21 @@ onMounted(() => {
     })
     .then(data => {
       console.log("Table data", data);
-      tables.value = data.data;
+      tables.value = data;
 
       // map markers onto leaflet map
-      data.data.forEach(table => {
-        if (table.latitude && table.longitude) { // check if coordinates exist
+      data.forEach(table => {
+        if (table.latitude && table.longitude) {
           const marker = L.marker([table.latitude, table.longitude]).addTo(map);
-          marker.bindPopup(`Table ${table.table_number}`);
+          marker.bindPopup(`
+          <b>Table ${table.tableNumber}</b><br>
+          Location: ${table.location}<br>
+          Chairs: ${table.numberOfChairs}<br>
+          Capacity: ${table.capacity}<br>
+          Utilization: ${table.utilization}<br>
+          Outlet nearby: ${table.outletNearby ? 'Yes' : 'No'}<br>
+          Toilet nearby: ${table.toiletNearby ? 'Yes' : 'No'}
+        `);
         }
       });
     })
@@ -107,52 +106,55 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="wrapper">
-      <div class="header-toolbar">
-        <!--account controls-->
-        <div>
-          <button class="danger" @click="handleLogout">Log out</button>
-          <button @click="visitMe">Me</button>
-        </div>
-        <form @submit.prevent>
-          <input v-model="searchTerm" type="text" id="search" placeholder="Search for tables" required>
-        </form>
+    <!-- ✅ Sticky top header -->
+    <div class="header-toolbar">
+      <div class="header-controls">
+        <button class="danger" @click="handleLogout">Log out</button>
+        <button @click="visitMe">Me</button>
       </div>
-      <!-- flex box controls the layout-->
-      <div style="display: flex; margin-left: .5em; margin-right: .5em;">
-        <!-- display map information -->
-        <div style="width: 50%;">
-          <h2>Map</h2>
-          <!-- initialize map -->
-          <div style="height: 400px; width: 95%;" id="map"></div>
-          <!-- <button>Center</button> -->
+      <h1>StudySpot</h1>
+    </div>
+
+    <!-- ✅ Full-width search bar -->
+    <div class="search-bar-container">
+      <input
+        v-model="searchTerm"
+        type="text"
+        placeholder="🔍 Search tables by number or location..."
+      />
+    </div>
+
+    <!-- ✅ Two-column main layout -->
+    <div class="map-layout">
+      <!-- LEFT: Map -->
+      <div class="left-pane">
+        <h2>Map</h2>
+        <div id="map"></div>
+      </div>
+
+      <!-- RIGHT: Table list -->
+      <div class="right-pane">
+        <h2>Tables near me</h2>
+
+        <div v-for="table in handleSearch" :key="table._id" class="table-card">
+          <h3>Table {{ table.tableNumber }}</h3>
+          <ul>
+            <li>Location: {{ table.location }}</li>
+            <li>Number of chairs: {{ table.numberOfChairs }}</li>
+            <li>Outlet nearby: {{ table.outletNearby ? 'Yes' : 'No' }}</li>
+            <li>Toilet nearby: {{ table.toiletNearby ? 'Yes' : 'No' }}</li>
+            <li>Capacity: {{ table.capacity }}</li>
+            <li>
+              Occupancy:
+              {{ ((table.utilization / table.capacity) * 100).toFixed(0) }}%
+            </li>
+          </ul>
+          <div class="table-actions">
+            <button @click="handleIamHere(table._id)">I am here</button>
+          </div>
         </div>
 
-        <!-- get list of tables -->
-        <div style="width: 50%;">
-          <h2>Tabling information</h2>
-          <!-- populate all tables -->
-          <div v-for="table in handleSearch" :key="table.id" class="table-card">
-            <h3>Table {{ table.table_number }}</h3>
-            <ul>
-              <li>Location: {{ table.location }}</li>
-              <li>Number of chairs: {{ table.num_chairs }}</li>
-              <li>Power outlet nearby? {{ table.power_outlet_nearby > 0 ? 'Yes' : 'No' }}</li>
-              <li>Toilet nearby? {{ table.toilet_nearby > 0 ? 'Yes' : 'No' }}</li>
-            </ul>
-            <div>
-              <button @click="handleIamHere(table.capacity ,table.id)">I am here</button>
-              <!-- <button>Report</button> -->
-            </div>
-            <img v-if="table.capacity > 50" style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
-              src="./assets/traffic_green.png" alt="traffic_light_green" />
-            <img v-else-if="table.capacity > 20" style="margin-left: 5%; transform: rotate(90deg);" height="100"
-              width="auto" src="./assets/traffic_yellow.png" alt="traffic_light_yellow" />
-            <img v-else style="margin-left: 5%; transform: rotate(90deg);" height="100" width="auto"
-              src="./assets/traffic_red.png" alt="traffic_light_red" />
-          </div>
-          <p v-show="tables.length == 0">There are no tables available</p>
-        </div>
+        <p v-show="tables.length === 0">There are no tables available.</p>
       </div>
     </div>
   </main>

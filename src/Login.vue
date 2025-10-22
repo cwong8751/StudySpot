@@ -33,28 +33,29 @@ const handleLogin = () => {
   }
 
   // Fetch request to login user
-  fetch('http://localhost:3000/api/users/login', {
+  // login
+  fetch('http://localhost:5001/users/login', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ username: username.value, password: password.value }),
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Invalid username and password.');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log("Login success", data);
-    alert("Login success");
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Invalid username and password.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Login success", data);
+      alert("Login success");
 
-    // set user details into session 
-    sessionStorage.setItem('user', username.value); //TODO: might want to change this later 
-    router.push('/map');
-  })
-  .catch(error => {
-    console.error(error);
-  });
+      // set user details into session 
+      sessionStorage.setItem('user', username.value); //TODO: might want to change this later 
+      router.push('/map');
+    })
+    .catch(error => {
+      console.error(error);
+    });
 };
 
 // Function to handle signup
@@ -64,24 +65,25 @@ const handleSignup = () => {
     return;
   }
 
-  fetch('http://localhost:3000/api/users/signup', {
+  // signup
+  fetch('http://localhost:5001/users/signup', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username: username.value, password: password.value }),
+    body: JSON.stringify({ username: username.value, password: password.value, email: email.value }),
   })
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Something went wrong.');
-    }
-    return response.json();
-  })
-  .then(data => {
-    console.log("Signup success", data);
-    alert("Signup success");
-  })
-  .catch(error => {
-    console.error(error);
-  });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Something went wrong.');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("Signup success", data);
+      alert("Signup success");
+    })
+    .catch(error => {
+      console.error(error);
+    });
 };
 
 // Function to handle account selection
@@ -98,34 +100,26 @@ const handleAccount = () => {
 <template>
   <main>
     <div class="wrapper">
-      <div class="left-right-container">
-        <div class="left-subcontainer">
-          <h2>Log in/Sign up</h2>
-          <p>If you haven't signed up yet, we will sign you up; otherwise, you will be logged in.</p>
-          <button @click="visitHello">Go back</button>
-        </div>
-        <div class="right-subcontainer">
-          <form @submit.prevent="handleAccount">
-            <label for="login">Login: </label>
-            <input type="radio" id="login" name="account" value="login" required>
-            
-            <label for="signup">Sign Up: </label>
-            <input type="radio" id="signup" name="account" value="signup">
-            
-            <br><br>
-            <label for="username">Username*: </label>
-            <div><input type="text" id="username" v-model="username" placeholder="John" required></div>
-            
-            <label for="password">Password*: </label>
-            <div><input type="password" id="password" v-model="password" placeholder="Smith" required></div>
-            
-            <label for="email">Email*: </label>
-            <div><input type="email" id="email" v-model="email" placeholder="someone@wustl.edu" required></div>
+      <h2>Log in/Sign Up</h2>
+      <form @submit.prevent="handleAccount">
+        <label for="login">Login: </label>
+        <input type="radio" id="login" name="account" value="login" required>
 
-            <button type="submit">Go</button>
-          </form>
-        </div>
-      </div>
+        <label for="signup">Sign Up: </label>
+        <input type="radio" id="signup" name="account" value="signup">
+
+        <br><br>
+        <label for="username">Username*: </label>
+        <div><input type="text" id="username" v-model="username" placeholder="John" required></div>
+
+        <label for="password">Password*: </label>
+        <div><input type="password" id="password" v-model="password" placeholder="Smith" required></div>
+
+        <label for="email">Email*: </label>
+        <div><input type="email" id="email" v-model="email" placeholder="someone@wustl.edu" required></div>
+
+        <button type="submit">Go</button>
+      </form>
     </div>
   </main>
 </template>
