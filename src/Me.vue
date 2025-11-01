@@ -73,35 +73,65 @@ onMounted(() => {
 </script>
 
 <template>
-  <main>
-    <div class="wrapper">
-      <!-- Header -->
-      <div class="header-toolbar">
-        <button class="danger" @click="handleLogout">Log out</button>
-        <button @click="visitMap">Map</button>
-      </div>
+  <v-app>
+    <v-main>
+      <v-container>
 
-      <div style="display: flex; margin-left: .5em; margin-right: .5em;">
-        <!-- LEFT: Account Info -->
-        <div style="width: 50%;">
-          <h2>My Account</h2>
+        <v-app-bar app color="primary" dark>
+          <v-toolbar-title>StudySpot</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn class="bg-red-darken-2 text-white" @click="handleLogout">Log out</v-btn>
+          <v-btn @click="visitMap">Map</v-btn>
+        </v-app-bar>
 
-          <b>Details:</b>
-          <ul v-if="userInfo">
-            <li><b>Username:</b> {{ userInfo.username }}</li>
-            <li><b>Email:</b> {{ userInfo.email }}</li>
-            <li><b>Account ID:</b> {{ userInfo._id }}</li>
-          </ul>
-          <p v-else>Loading user info...</p>
-        </div>
+        <v-row>
+          <v-col cols="12">
+            <v-card class="mb-4">
+              <v-card-title>My Account</v-card-title>
+              <v-card-text>
+                <b>Details:</b>
+                <v-list v-if="userInfo">
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title><b>Username:</b> {{ userInfo.username }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title><b>Email:</b> {{ userInfo.email }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item>
+                    <v-list-item-content>
+                      <v-list-item-title><b>Account ID:</b> {{ userInfo._id }}</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+                <v-progress-circular v-else indeterminate color="primary"></v-progress-circular>
+              </v-card-text>
+            </v-card>
 
-        <!-- RIGHT: Account Actions -->
-        <div style="width: 50%;">
-          <h2>Actions</h2>
-          <b>Delete Account:</b>
-          <button class="danger" @click="handleDeleteAccount">Goodbye</button>
-        </div>
-      </div>
-    </div>
-  </main>
+            <v-card class="mb-4">
+              <v-card-title>Tabling history</v-card-title>
+              <v-card-text>
+                <p>Feature coming soon!</p>
+              </v-card-text>
+            </v-card>
+
+            <v-card class="mb-4">
+              <v-card-title>Actions</v-card-title>
+              <v-card-text>
+                <b>Delete Account:</b>
+                <v-btn color="error" @click="handleDeleteAccount">Goodbye</v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
+
+<style>
+/* Add any custom styles if needed */
+</style>

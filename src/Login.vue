@@ -9,11 +9,7 @@ const router = useRouter();
 const username = ref('');
 const password = ref('');
 const email = ref('');
-
-// Function to navigate to "/"
-const visitHello = () => {
-  router.push('/');
-};
+const accountType = ref('login'); // Tracks selected account type
 
 // Function to handle login
 const handleLogin = () => {
@@ -33,7 +29,6 @@ const handleLogin = () => {
   }
 
   // Fetch request to login user
-  // login
   fetch('http://localhost:5001/users/login', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
@@ -49,8 +44,8 @@ const handleLogin = () => {
       console.log("Login success", data);
       alert("Login success");
 
-      // set user details into session 
-      sessionStorage.setItem('user', username.value); //TODO: might want to change this later 
+      // Set user details into session
+      sessionStorage.setItem('user', username.value); // TODO: might want to change this later
       router.push('/map');
     })
     .catch(error => {
@@ -65,7 +60,7 @@ const handleSignup = () => {
     return;
   }
 
-  // signup
+  // Signup
   fetch('http://localhost:5001/users/signup', {
     method: "POST",
     headers: { 'Content-Type': 'application/json' },
@@ -88,38 +83,49 @@ const handleSignup = () => {
 
 // Function to handle account selection
 const handleAccount = () => {
-  const type = document.querySelector('input[name="account"]:checked');
-  if (type) {
-    type.value === "login" ? handleLogin() : handleSignup();
+  if (accountType.value === "login") {
+    handleLogin();
   } else {
-    alert("Please choose login or signup");
+    handleSignup();
   }
 };
 </script>
 
 <template>
-  <main>
-    <div class="wrapper">
-      <h2>Log in/Sign Up</h2>
-      <form @submit.prevent="handleAccount">
-        <label for="login">Login: </label>
-        <input type="radio" id="login" name="account" value="login" required>
+  <v-app>
+    <v-main>
+      <v-container class="d-flex justify-center align-center" style="height: 100vh;">
+        <v-card class="pa-6" elevation="3" max-width="500" width="100%">
+          <v-card-title class="text-h5 text-center mb-4">
+            Log in / Sign Up
+          </v-card-title>
 
-        <label for="signup">Sign Up: </label>
-        <input type="radio" id="signup" name="account" value="signup">
+          <v-card-text>
+            <v-radio-group v-model="accountType" row class="mb-4 justify-center">
+              <v-radio label="Login" value="login"></v-radio>
+              <v-radio label="Sign Up" value="signup"></v-radio>
+            </v-radio-group>
 
-        <br><br>
-        <label for="username">Username*: </label>
-        <div><input type="text" id="username" v-model="username" placeholder="John" required></div>
+            <v-text-field v-model="username" label="Username*" required outlined class="mb-3"></v-text-field>
 
-        <label for="password">Password*: </label>
-        <div><input type="password" id="password" v-model="password" placeholder="Smith" required></div>
+            <v-text-field v-model="password" label="Password*" type="password" required outlined
+              class="mb-3"></v-text-field>
 
-        <label for="email">Email*: </label>
-        <div><input type="email" id="email" v-model="email" placeholder="someone@wustl.edu" required></div>
+            <v-text-field v-model="email" label="Email*" type="email" required outlined></v-text-field>
+          </v-card-text>
 
-        <button type="submit">Go</button>
-      </form>
-    </div>
-  </main>
+          <v-card-actions class="justify-center">
+            <v-btn color="primary" @click="handleAccount" size="large">
+              Go
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
+
+
+<style>
+/* Optional: Add custom styles if needed */
+</style>

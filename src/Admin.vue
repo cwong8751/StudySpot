@@ -110,84 +110,65 @@ onMounted(fetchTables);
 </script>
 
 <template>
-  <main>
-    <div class="wrapper">
-      <!-- Header -->
-      <div class="header-toolbar">
-        <button class="danger">Log out</button>
-        <button @click="visitMap">Map</button>
-      </div>
+  <v-container>
+    <v-row>
+      <v-col cols="12" class="d-flex justify-space-between align-center">
+        <v-btn color="error" class="mr-2">Log out</v-btn>
+        <v-btn color="primary" @click="visitMap">Map</v-btn>
+      </v-col>
+    </v-row>
 
-      <div style="display: flex; margin-left: .5em; margin-right: .5em;">
-        <!-- LEFT: Table list -->
-        <div class="left-subcontainer">
-          <h2>Administrator</h2>
-          <div>
-            <button @click="handleModifyTableButton">Modify Table</button>
-            <button @click="handleDeleteTableButton">Delete Table</button>
-            <form @submit.prevent>
-              <input v-model="searchTerm" type="text" placeholder="Search for tables" />
-            </form>
-          </div>
+    <v-row>
+      <!-- LEFT: Table list -->
+      <v-col cols="12" md="6">
+        <h2>Administrator</h2>
+        <v-btn color="primary" class="mr-2" @click="handleModifyTableButton">Modify Table</v-btn>
+        <v-btn color="error" @click="handleDeleteTableButton">Delete Table</v-btn>
+        <v-text-field v-model="searchTerm" label="Search for tables" class="mt-4" outlined></v-text-field>
 
-          <!-- Tables -->
-          <div>
-            <div v-for="table in handleSearch" :key="table._id" @click="handleTableClicked(table)"
-              :class="['table-card', selectedTableId === table._id ? 'selected' : '']">
-              <h3>Table {{ table.tableNumber }}</h3>
-              <ul>
-                <li>Location: {{ table.location }}</li>
-                <li>Chairs: {{ table.numberOfChairs }}</li>
-                <li>Outlet nearby: {{ table.outletNearby ? 'Yes' : 'No' }}</li>
-                <li>Toilet nearby: {{ table.toiletNearby ? 'Yes' : 'No' }}</li>
-                <li>Latitude: {{ table.latitude }}</li>
-                <li>Longitude: {{ table.longitude }}</li>
-              </ul>
-            </div>
-            <p v-show="tables.length === 0">No tables available</p>
-          </div>
-        </div>
+        <v-list>
+          <v-list-item v-for="table in handleSearch" :key="table._id" @click="handleTableClicked(table)"
+            :class="selectedTableId === table._id ? 'selected' : ''">
+            <v-list-item-content>
+              <v-list-item-title class="font-weight-bold">
+                Table {{ table.tableNumber }}
+              </v-list-item-title>
 
-        <!-- RIGHT: Add table form -->
-        <div class="right-subcontainer">
-          <h2>Add a new table</h2>
-          <form @submit.prevent="handleAddTable" class="add-table-form">
-            <div>
-              <label for="tableNumber">Table Number:</label>
-              <input id="tableNumber" type="number" v-model="tableNumber" required />
+              <div class="text-body-2 mt-2">
+                <ul class="pl-4">
+                  <li><strong>Location:</strong> {{ table.location }}</li>
+                  <li><strong>Chairs:</strong> {{ table.numberOfChairs }}</li>
+                  <li><strong>Outlet nearby:</strong> {{ table.outletNearby ? 'Yes' : 'No' }}</li>
+                  <li><strong>Toilet nearby:</strong> {{ table.toiletNearby ? 'Yes' : 'No' }}</li>
+                  <li><strong>Latitude:</strong> {{ table.latitude }}</li>
+                  <li><strong>Longitude:</strong> {{ table.longitude }}</li>
+                </ul>
+              </div>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+        <v-alert v-show="tables.length === 0" type="info" class="mt-4">
+          No tables available
+        </v-alert>
+      </v-col>
 
-              <label for="tableLocation">Location:</label>
-              <input id="tableLocation" type="text" v-model="tableLocation" required />
-
-              <label for="numChairs">Number of Chairs:</label>
-              <input id="numChairs" type="number" v-model="numChairs" required />
-
-              <label for="powerOutlet">Power Outlet Nearby:</label>
-              <select id="powerOutlet" v-model="powerOutlet" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-
-              <label for="toiletNearby">Toilet Nearby:</label>
-              <select id="toiletNearby" v-model="toiletNearby" required>
-                <option value="1">Yes</option>
-                <option value="0">No</option>
-              </select>
-
-              <label for="capacity">Capacity:</label>
-              <input id="capacity" type="number" required placeholder="Max capacity..." v-model="capacity" />
-
-              <label for="latitude">Latitude:</label>
-              <input id="latitude" type="number" step="any" v-model="lat" required />
-
-              <label for="longitude">Longitude:</label>
-              <input id="longitude" type="number" step="any" v-model="long" required />
-
-              <button type="submit">Add Table</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </main>
+      <!-- RIGHT: Add table form -->
+      <v-col cols="12" md="6">
+        <h2>Add a new table</h2>
+        <v-form @submit.prevent="handleAddTable">
+          <v-text-field v-model="tableNumber" label="Table Number" type="number" outlined required></v-text-field>
+          <v-text-field v-model="tableLocation" label="Location" outlined required></v-text-field>
+          <v-text-field v-model="numChairs" label="Number of Chairs" type="number" outlined required></v-text-field>
+          <v-select v-model="powerOutlet" :items="[{ title: 'Yes', value: '1' }, { title: 'No', value: '0' }]"
+            label="Power Outlet Nearby" outlined required></v-select>
+          <v-select v-model="toiletNearby" :items="[{ title: 'Yes', value: '1' }, { title: 'No', value: '0' }]"
+            label="Toilet Nearby" outlined required></v-select>
+          <v-text-field v-model="capacity" label="Capacity" type="number" outlined required></v-text-field>
+          <v-text-field v-model="lat" label="Latitude" type="number" step="any" outlined required></v-text-field>
+          <v-text-field v-model="long" label="Longitude" type="number" step="any" outlined required></v-text-field>
+          <v-btn type="submit" color="success" class="mt-4">Add Table</v-btn>
+        </v-form>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>

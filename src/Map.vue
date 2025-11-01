@@ -7,20 +7,19 @@ import 'leaflet/dist/leaflet.css';
 const router = useRouter();
 const tables = ref([]); // array to hold table data
 const searchTerm = ref(''); // search term for filtering tables
+const hovered = ref(null);
 
 const visitMe = () => {
   router.push('/me');
 };
 
 const handleLogout = () => {
-  // Handle logout logic here
   console.log("User logged out");
   sessionStorage.clear();
   alert("Bye bye");
   router.push('/login');
 };
 
-// handles the i am here btn
 const handleIamHere = async (tableId) => {
   try {
     const response = await fetch('http://localhost:5001/tables/iAmHere', {
@@ -38,8 +37,6 @@ const handleIamHere = async (tableId) => {
   }
 };
 
-
-// handles the search bar
 const handleSearch = computed(() => {
   const searchLower = searchTerm.value.toLowerCase();
   return tables.value.filter(table => {
@@ -50,9 +47,11 @@ const handleSearch = computed(() => {
   });
 });
 
-onMounted(() => {
+const handleScan = () => {
 
-  // check if user is logged in
+}
+
+onMounted(() => {
   const user = sessionStorage.getItem('user');
   if (!user) {
     alert("Please log in");
@@ -82,7 +81,6 @@ onMounted(() => {
       console.log("Table data", data);
       tables.value = data;
 
-      // map markers onto leaflet map
       data.forEach(table => {
         if (table.latitude && table.longitude) {
           const marker = L.marker([table.latitude, table.longitude]).addTo(map);
@@ -105,57 +103,94 @@ onMounted(() => {
 </script>
 
 <template>
-  <main>
-    <!-- ✅ Sticky top header -->
-    <div class="header-toolbar">
-      <div class="header-controls">
-        <button class="danger" @click="handleLogout">Log out</button>
-        <button @click="visitMe">Me</button>
-      </div>
-      <h1>StudySpot</h1>
-    </div>
+  <v-app>
+    <v-main>
+      <v-container>
+        <!-- Header -->
+        <v-app-bar app color="primary" dark>
+          <v-toolbar-title>StudySpot</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn class="bg-red-darken-2 text-white" @click="handleLogout">Log out</v-btn>
+          <v-btn color="text-white" @click="visitMe">Me</v-btn>
+          <v-btn class="bg-green-darken-2 text-white" @click="handleScan">Scan</v-btn>
+        </v-app-bar>
 
-    <!-- ✅ Full-width search bar -->
-    <div class="search-bar-container">
-      <input
-        v-model="searchTerm"
-        type="text"
-        placeholder="🔍 Search tables by number or location..."
-      />
-    </div>
+        <!-- Search Bar -->
+        <v-row class="mt-4">
+          <v-col cols="12">
+            <v-text-field v-model="searchTerm" label="Search tables by number or location"
+              prepend-inner-icon="mdi-magnify" outlined dense></v-text-field>
+          </v-col>
+        </v-row>
 
-    <!-- ✅ Two-column main layout -->
-    <div class="map-layout">
-      <!-- LEFT: Map -->
-      <div class="left-pane">
-        <h2>Map</h2>
-        <div id="map"></div>
-      </div>
+        <!-- Main Layout -->
+        <v-row>
+          <!-- Map Section -->
+          <v-col cols="12" md="6">
+            <v-card>
+              <v-card-title>Map</v-card-title>
+              <v-card-text>
+                <div id="map" style="height: 400px;"></div>
+              </v-card-text>
+            </v-card>
+          </v-col>
 
-      <!-- RIGHT: Table list -->
-      <div class="right-pane">
-        <h2>Tables near me</h2>
+          <!-- Table List Section -->
+          <v-col cols="12" md="6">
+            <v-card class="mb-4">
+              <v-card-title>Tables near me</v-card-title>
+            </v-card>
 
-        <div v-for="table in handleSearch" :key="table._id" class="table-card">
-          <h3>Table {{ table.tableNumber }}</h3>
-          <ul>
-            <li>Location: {{ table.location }}</li>
-            <li>Number of chairs: {{ table.numberOfChairs }}</li>
-            <li>Outlet nearby: {{ table.outletNearby ? 'Yes' : 'No' }}</li>
-            <li>Toilet nearby: {{ table.toiletNearby ? 'Yes' : 'No' }}</li>
-            <li>Capacity: {{ table.capacity }}</li>
-            <li>
-              Occupancy:
-              {{ ((table.utilization / table.capacity) * 100).toFixed(0) }}%
-            </li>
-          </ul>
-          <div class="table-actions">
-            <button @click="handleIamHere(table._id)">I am here</button>
-          </div>
-        </div>
+            <v-card-text>
+              <v-alert v-if="tables.length === 0" type="info">
+                There are no tables available.
+              </v-alert>
+            </v-card-text>
 
-        <p v-show="tables.length === 0">There are no tables available.</p>
-      </div>
-    </div>
-  </main>
+            <v-row>
+              <v-col v-for="table in handleSearch" :key="table._id" cols="12" md="6">
+                <v-card class="hoverable bg-surface mb-4" elevation="2" @mouseenter="hovered = table._id"
+                  @mouseleave="hovered = null" :class="hovered === table._id ? 'bg-blue-lighten-5' : 'bg-surface'">
+                  <v-card-title>Table {{ table.tableNumber }}</v-card-title>
+
+                  <v-card-text>
+                    <ul class="ml-2">
+                      <li><strong>Location:</strong> {{ table.location }}</li>
+                      <li><strong>Number of chairs:</strong> {{ table.numberOfChairs }}</li>
+                      <li><strong>Outlet nearby:</strong> {{ table.outletNearby ? 'Yes' : 'No' }}</li>
+                      <li><strong>Toilet nearby:</strong> {{ table.toiletNearby ? 'Yes' : 'No' }}</li>
+                      <li><strong>Capacity:</strong> {{ table.capacity }}</li>
+                      <li>
+                        <strong>Occupancy:</strong>
+                        {{ ((table.utilization / table.capacity) * 100).toFixed(0) }}%
+                      </li>
+                    </ul>
+                  </v-card-text>
+
+                  <v-card-actions>
+                    <v-btn color="primary" @click="handleIamHere(table._id)">
+                      I am here
+                    </v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-col>
+            </v-row>
+
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
+  </v-app>
 </template>
+
+<style>
+#map {
+  height: 400px;
+}
+</style>
+
+<style scoped>
+.v-card {
+  transition: background-color 0.25s ease;
+}
+</style>
